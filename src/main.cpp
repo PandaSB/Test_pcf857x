@@ -2,14 +2,14 @@
 #include <Wire.h>
 
 // #define HW_PCF8575
-#define LIGNE0 0 // Sortie
-#define LIGNE1 1 // Sortie
-#define LIGNE2 2 // Sortie
+#define COLONNE0 0 // Sortie
+#define COLONNE1 1 // Sortie
+#define COLONNE2 2 // Sortie
 
-#define COLONNE0 3 // Entrée
-#define COLONNE1 4 // Entrée
-#define COLONNE2 5 // Entrée
-#define COLONNE3 6 // Entrée
+#define LIGNE0 3 // Entrée
+#define LIGNE1 4 // Entrée
+#define LIGNE2 5 // Entrée
+#define LIGNE3 6 // Entrée
 
 #define LED 7 // Sortie
 
@@ -111,17 +111,17 @@ void setup()
     }
 
     /* Init Entrée Sortie PCF857x*/
-    pcf.pinMode(LIGNE0  , OUTPUT);
-    pcf.pinMode(LIGNE1  , OUTPUT);
-    pcf.pinMode(LIGNE2  , OUTPUT);
-    pcf.pinMode(COLONNE0, INPUT_PULLUP);
-    pcf.pinMode(COLONNE1, INPUT_PULLUP);
-    pcf.pinMode(COLONNE2, INPUT_PULLUP);
-    pcf.pinMode(COLONNE3, INPUT_PULLUP);
+    pcf.pinMode(COLONNE0  , OUTPUT);
+    pcf.pinMode(COLONNE1  , OUTPUT);
+    pcf.pinMode(COLONNE2  , OUTPUT);
+    pcf.pinMode(LIGNE0, INPUT_PULLUP);
+    pcf.pinMode(LIGNE1, INPUT_PULLUP);
+    pcf.pinMode(LIGNE2, INPUT_PULLUP);
+    pcf.pinMode(LIGNE3, INPUT_PULLUP);
 
-    pcf.digitalWrite(LIGNE0, LOW) ; 
-    pcf.digitalWrite(LIGNE1, LOW) ; 
-    pcf.digitalWrite(LIGNE2, LOW) ; 
+    pcf.digitalWrite(COLONNE0, LOW) ; 
+    pcf.digitalWrite(COLONNE1, LOW) ; 
+    pcf.digitalWrite(COLONNE2, LOW) ; 
 
     pcf.digitalWrite(LED,HIGH); /*Eteint led PCF */
 
@@ -144,20 +144,20 @@ void loop()
         LOG("Interruption Detecté\r\n") ; 
         detachInterrupt (digitalPinToInterrupt(IRQ_PIN));
         bInterruptDetected = false ; 
-        for (int i = LIGNE0 ; i <= LIGNE2 ; i ++)
+        for (int i = COLONNE0 ; i <= COLONNE2 ; i ++)
         {
-            pcf.digitalWrite(LIGNE0, (i == LIGNE0) ?  LOW : HIGH ); 
-            pcf.digitalWrite(LIGNE1, (i == LIGNE1) ?  LOW : HIGH ); 
-            pcf.digitalWrite(LIGNE2, (i == LIGNE2) ?  LOW : HIGH ); 
-            for (int j  = COLONNE0 ; j <= COLONNE3 ; j ++)
+            pcf.digitalWrite(COLONNE0, (i == COLONNE0) ?  LOW : HIGH ); 
+            pcf.digitalWrite(COLONNE1, (i == COLONNE1) ?  LOW : HIGH ); 
+            pcf.digitalWrite(COLONNE2, (i == COLONNE2) ?  LOW : HIGH ); 
+            for (int j  = LIGNE0 ; j <= LIGNE3 ; j ++)
             {
                 bool etat = pcf.digitalRead (j) ; 
-                //LOG("Test LINE %d - COLONNE %d : etat %s \r\n" , i - LIGNE0 , j - COLONNE0, (etat) ? "INACTIF" : "ACTIF" ) ; 
+                //LOG("Test COLONNE %d - LIGNE %d : etat %s \r\n" , i - COLONNE0 , j - LIGNE0, (etat) ? "INACTIF" : "ACTIF" ) ; 
 
                 if (  etat != true ) 
                 {
                     KeyDetected = true ; 
-                    Key = keyboard[i-LIGNE0][j-COLONNE0] ; 
+                    Key = keyboard[i-COLONNE0][j-LIGNE0] ; 
                     LOG("Touche Appuyée : %c \r\n " , Key );
                     pcf.digitalWrite (LED, ! pcf.digitalRead(LED)) ; 
 
@@ -167,9 +167,9 @@ void loop()
 
             }
         }
-        pcf.digitalWrite(LIGNE0, LOW) ; 
-        pcf.digitalWrite(LIGNE1, LOW) ; 
-        pcf.digitalWrite(LIGNE2, LOW) ; 
+        pcf.digitalWrite(COLONNE0, LOW) ; 
+        pcf.digitalWrite(COLONNE1, LOW) ; 
+        pcf.digitalWrite(COLONNE2, LOW) ; 
 
         /*Change la led du Nano a chaque IT detectée*/
         digitalWrite (LED_BUILTIN, digitalRead(LED_BUILTIN)) ; 
